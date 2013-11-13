@@ -1,11 +1,10 @@
 #include "metro.h"
-#include <stdlib.h>
+#include "random.h"
 
 void init() {
 
   //initialize pseudo random number generator
-  srand(123);
-
+  randomInit(123);
 
 }
 
