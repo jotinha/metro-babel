@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdlib.h>
 #include "core.h"
 
 double minimg_r2(double * p1, double * p2, double *box) { 
@@ -24,4 +25,8 @@ double minimg_r(double * p1, double * p2, double *box) {
 
   return sqrt(minimg_r2(p1,p2,box));
 
+}
+
+double rand_d() {
+    return (double)rand()/(double)RAND_MAX;
 }
