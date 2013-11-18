@@ -1,10 +1,10 @@
 #include <math.h>
 #include "core.h"
 #include "config.h"
+
 double calcEner_r2(double r2, double eps, double sigma, int doVirial, double * virial) {
 
-
-double sr2,sr4,sr6,sr12;
+  double sr2,sr4,sr6,sr12;
 
   sr2 = sigma*sigma/r2;
   sr4 = sr2*sr2;
