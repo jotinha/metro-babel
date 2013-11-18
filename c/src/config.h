@@ -5,5 +5,7 @@ typedef struct Config {
   double * pos;
   double * box;
   double eps, sigma;
+  double temp;
+  double maxd;
 } Config;
 
