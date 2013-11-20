@@ -2,8 +2,6 @@
 #include "metro.h"
 #include "core.h"
 #include "random.h"
-#include "config.h"
-#include "simulation.h"
 #include "forcefield.h"
 
 double mcstep(ulong niters, Config * conf, Simulation * sim) {

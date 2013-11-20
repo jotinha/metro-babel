@@ -26,3 +26,12 @@ double minimg_r(double * p1, double * p2, double *box) {
   return sqrt(minimg_r2(p1,p2,box));
 
 }
+
+void displaceParticle(Config * conf, uint i, double dx, double dy, double dz) {
+
+    double * p = &(conf->pos[i*3]);
+    *p += dx;
+    *(p++) += dy;
+    *(p++) += dz;
+
+}
