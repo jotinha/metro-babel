@@ -4,23 +4,18 @@ import RandomUtils
 import Montecarlo
 import Structures
 
-
+n = 108 :: Int
+temp = 1.0 :: Double
+rd = 0.1 :: Double
+dens = 1.0 :: Double
 seed = 12345
+
+rl = (fromIntegral n / dens)**(1.0/3.0)
+
+box = replicate 3 rl
 rndg0 = mkStdGen seed
-box = replicate 3 5.0
-rd = 0.1
-temp = 1.0
-vol box = product box
-dens n box = n / (vol box)
-(pos,rndg1) = iniStructureLiq 108 box rndg0
+(pos,rndg1) = iniStructureLiq n box rndg0
 chain = createChain 10 pos box rd temp rndg1
---chain of samples taken every <step> steps times number of atoms
 
-
-        --where natoms = length pos
-
---finiteChain = take 100 chain
-      
---(nacc,energy,newpos,newrndg) = last finiteChain
 main = do
   mapM (\(a,e,_,_) -> print e) chain
