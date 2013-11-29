@@ -2,6 +2,7 @@ module Utils
 ( mean,
   reshape,
   takeEveryN,
+  normsq,
 ) where
 
 mean xs = sum xs / (fromIntegral (length xs))
@@ -17,3 +18,6 @@ takeEveryN :: Int -> [a] -> [a]
 takeEveryN n xs = case drop (n-1) xs of 
                     (nth:rest) -> nth : takeEveryN n rest
                     [] -> []
+
+normsq :: (Num a) => [a] -> a
+normsq = sum . map (^2)
