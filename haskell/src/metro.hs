@@ -1,6 +1,6 @@
-import System.Random
 import Debug.Trace
 import Utils
+import RandomUtils
 
 normsq :: (Num a) => [a] -> a
 normsq = sum . map (^2)
@@ -30,17 +30,6 @@ enerOne i pos box = sum $ map enerPair' (singleLoopExceptIdx pos i)
 enerOnePos pos1 posrest box = sum $ map enerPair' posrest
           where enerPair' p0 = enerPair p0 pos1 box
 
-seed = 12345
-randomGen0 = mkStdGen seed
-
-randomd01 :: (RandomGen g) => g -> (Double,g) 
-randomd01 rndg = randomR (0.0,1.0) rndg
-
-randomsd01 :: (RandomGen g) => Int -> g -> ([Double],g) 
-randomsd01 0 rndg = ([],rndg)
-randomsd01 n rndg = (d:lst,finalrndg)
-          where (d,rndg1) = randomd01 rndg
-                (lst,finalrndg) = randomsd01 (n-1) rndg1
 
 accept :: (RandomGen g) => Double -> g -> (Bool,g)
 accept arg rndg
@@ -85,6 +74,8 @@ iniStructureLiq n box rndg =  (pos,newrndg)
                 redPos = reshape 3 flat
                 pos = map (zipWith (*) box) redPos
 
+seed = 12345
+randomGen0 = mkStdGen seed
 box = replicate 3 5.0
 rd = 0.1
 temp = 1.0
