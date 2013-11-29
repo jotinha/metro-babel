@@ -5,6 +5,7 @@ typedef struct Config {
   uint N;
   double * pos;
   double * box;
+  double rcsq;
 } Config;
 
 typedef struct Simulation {

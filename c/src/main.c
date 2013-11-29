@@ -6,6 +6,14 @@ struct Files{
   FILE * eners;
 } FILES;
 
+enum ESTRUCTURE {
+  ESLIQ = 0,
+  ESFCC = 1,
+  ESBCC = 2,
+  ESHCP = 3,
+}
+
+
 void init() {
 
   //initialize pseudo random number generator
@@ -24,22 +32,60 @@ void end() {
 
 void readInput(Config * conf, Simulation * sim,
            ulong * niters_eq,ulong * step_eq,
-           ulong * niters, ulong * step) {
+           ulong * niters, ulong * step, ESTRUCTURE * iniConfig) {
 
-  fprintf('Temperature: ');
-  fscanf('%f',&sim->temp);
+  int inic
 
-  fprintf('Number of iterations for equilibration: ');
-  fscanf('%i',niters_eq);
+  double * b = conf->box;
 
-  fprintf('Equilibration step: ');
-  fscanf('%i',step_eq);
+  printf('Temperature: ');
+  scanf('%f',&sim->temp);
 
-  fprintf('Number of iterations for run: ');
-  fscanf('%i',niters);
+  printf('Number of iterations for equilibration: ');
+  scanf('%i',niters_eq);
 
-  fprint('Sampling step: ');
-  fscanf('%i',step);
+  printf('Equilibration step: ');
+  scanf('%i',step_eq);
+
+  printf('Number of iterations for run: ');
+  scanf('%i',niters);
+
+  print('Sampling step: ');
+  scanf('%i',step);
+
+  printf('Number of particles: ');
+  scanf('%i',&conf->N)
+
+  printf('Box size (in units of sigma):\n');
+  printf('x: '); scanf('%f', b);
+  printf('y: '); scanf('%f', b++);
+  printf('z: '); scanf('%f', b++);
+
+  printf('Initial configuration ([0] liq, [1] fcc, [2] bcc, [3] hcp) : ');
+  do {
+    scanf('%i',&inic);
+  } while(inic >= 0 && inic <= 3);
+  *iniConfig = inic;  
+  
+  // switch (inic) {
+  //   case 0:
+  //     *iniConfig = ESLIQ;
+  //     break;
+  //   case 1:
+  //     *iniConfig = ESFCC,
+  //     break;
+  //   case 2:
+  //     *iniConfig = ESBCC,
+  //     break;
+  //   case 3:
+  //     *iniConfig = ESHCP.
+  //     break;
+  //   default:
+
+
+  // }
+
+
 
 }
 
@@ -81,10 +127,13 @@ void main() {
   Config * conf = &(theconf);
   Simulation * sim = &(thesim);
   ulong niters_eq, niters, step_eq, step;
+  ESTRUCTURE iniConfig;
 
   init();
 
-  readInput(conf,sim,&niters_eq,&step_eq,&niters,&step);
+  readInput(conf,sim,&niters_eq,&step_eq,&niters,&step,&iniConfig);
+
+  initStructure(conf,iniConfig);
 
   //equilibration
   run(true,niters_eq, step_eq,conf,sim);
