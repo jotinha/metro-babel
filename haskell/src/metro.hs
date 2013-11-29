@@ -18,4 +18,4 @@ rndg0 = mkStdGen seed
 chain = createChain 10 pos box rd temp rndg1
 
 main = do
-  mapM (\(a,e,_,_) -> print e) chain
+  mapM (\(a,e,_,_) -> print e) $ take 5 chain 
