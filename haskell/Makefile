@@ -1,3 +1,3 @@
 all:
 	mkdir -p bin obj
-	ghc --make src/metro.hs -o bin/metro -outputdir obj
+	ghc --make src/*.hs -o bin/metro -outputdir obj

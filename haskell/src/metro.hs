@@ -1,5 +1,6 @@
 import System.Random
 import Debug.Trace
+import Utils
 
 normsq :: (Num a) => [a] -> a
 normsq = sum . map (^2)
@@ -17,8 +18,6 @@ doubleLoopNoRepeat xs = [(a,b) | (i,a) <- zip [0..] xs, (j,b) <- zip [0..] xs, j
 singleLoopExceptIdx xs i = [x | (j,x) <- zip [0..] xs, j /= i]
 
 allPairs_r2 pos box = map (\(a,b) -> minimg_r2 a b box) (doubleLoopNoRepeat pos)
-
-mean xs = sum xs / (fromIntegral (length xs))
 
 enerPair p0 p1 box = lenjones_r2 $ minimg_r2 p0 p1 box
 
@@ -81,22 +80,10 @@ mcstep pos box rd temp rndg = iterate op_disp_cum (0,initialEnergy,pos,rndg)
 -- configuration and new gen state
 --mcstep' (pos,gen) = let (_,_,newpos,newgen) = op_disp pos box rd temp gen in (newpos,newgen)
 
-reshape :: Int -> [a] -> [[a]]
-reshape firstdim [] = []
-reshape firstdim xs
-  | firstdim <= 0 = error "dimension must be positive integer"
-  | otherwise = let (el,rest) = splitAt firstdim xs in el:reshape firstdim rest
-
 iniStructureLiq n box rndg =  (pos,newrndg)
           where (flat,newrndg) = randomsd01 (3*n) rndg 
                 redPos = reshape 3 flat
                 pos = map (zipWith (*) box) redPos
-
-takeEveryN :: Int -> [a] -> [a]
-takeEveryN n xs = case drop (n-1) xs of 
-                    (nth:rest) -> nth : takeEveryN n rest
-                    [] -> []
-
 
 box = replicate 3 5.0
 rd = 0.1
