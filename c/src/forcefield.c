@@ -32,9 +32,13 @@ double calcEner(Config * conf) {
     for (j=i, p2 = &(conf->pos[j]); j < N; j++, p2 += 3) {
       
       r2 = minimg_r2(p1, p2, conf->box);
+
+      if (r2 <= rcsq) {
       
-      ener += calcEner_r2(r2,1,&virialij);
-      virial += virialij;
+        ener += calcEner_r2(r2,1,&virialij);
+        virial += virialij;
+
+      }
 
     }
 
@@ -55,9 +59,13 @@ double calcEner_i(Config * conf, uint i) {
   for (j=i, p2 = &(conf->pos[j]); j < N; j++, p2 += 3) {
     
     r2 = minimg_r2(p1, p2, conf->box);
+
+    if (r2 <= conf->rcsq) {
     
-    ener += calcEner_r2(r2,1,&virialij);
-    virial += virialij;
+      ener += calcEner_r2(r2,1,&virialij);
+      virial += virialij;
+
+    }
 
   }
 
