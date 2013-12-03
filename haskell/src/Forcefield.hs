@@ -23,13 +23,14 @@ singleLoopExceptIdx xs i = [x | (j,x) <- zip [0..] xs, j /= i]
 
 allPairs_r2 pos box = map (\(a,b) -> minimg_r2 a b box) (doubleLoopNoRepeat pos)
 
-enerPair p0 p1 box = lenjones_r2 $ minimg_r2 p0 p1 box
+enerPair p0 p1 box rcsq  = if (r2 < rcsq) then lenjones_r2 r2 else 0.0
+          where r2 = minimg_r2 p0 p1 box
 
-enerTotal pos box = sum $ map enerPair' (doubleLoopNoRepeat pos)
-          where enerPair' (p0,p1) = enerPair p0 p1 box
+enerTotal pos box rcsq = sum $ map enerPair' (doubleLoopNoRepeat pos)
+          where enerPair' (p0,p1) = enerPair p0 p1 box rcsq
 
-enerOne i pos box = sum $ map enerPair' (singleLoopExceptIdx pos i)
-          where enerPair' p0 = enerPair p0 (pos !! i ) box
+enerOne i pos box rcsq = sum $ map enerPair' (singleLoopExceptIdx pos i)
+          where enerPair' p0 = enerPair p0 (pos !! i ) box rcsq
 
-enerOnePos pos1 posrest box = sum $ map enerPair' posrest
-          where enerPair' p0 = enerPair p0 pos1 box
+enerOnePos pos1 posrest box rcsq = sum $ map enerPair' posrest
+          where enerPair' p0 = enerPair p0 pos1 box rcsq
