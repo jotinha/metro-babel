@@ -1,7 +1,7 @@
 import Debug.Trace
 import Utils
 import RandomUtils
-import Montecarlo
+import qualified Montecarlo as MC
 import Structures
 
 n = 108 :: Int
@@ -14,8 +14,11 @@ rl = (fromIntegral n / dens)**(1.0/3.0)
 
 box = replicate 3 rl
 rndg0 = mkStdGen seed
-(pos,rndg1) = iniStructureLiq n box rndg0
-chain = createChain 10 pos box rd temp rndg1
+
+state0 = let (pos,rndg1) = iniStructureLiq n box rndg0
+         in MC.iniState pos box rndg1
+
+chain = MC.createChain 10 temp rd state0
 
 main = do
-  mapM (\(a,e,_,_) -> print e) $ take 5 chain 
+  mapM (\state-> print (MC.energy state)) $ take 5 chain 
