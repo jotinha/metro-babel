@@ -1,6 +1,7 @@
 module Montecarlo (
   createChain,
   iniState,
+  acc,
   State(..),
   Config(..)
 ) where
@@ -64,3 +65,9 @@ createChain obsStep temp rd rcsq state0
   | otherwise               = takeEveryN (obsStep*natoms) $ drop 1 $ iterate changeState' state0
     where natoms = length (pos state0)
           changeState' = changeState (Config temp rd rcsq)
+
+
+-- to get the acceptance, go to the final state and check the uid, since it starts at zero
+-- and is increased everytime a change occurs, then it last one equals the number of acceptances
+acc :: (Fractional a) => [State] -> a
+acc chain = (fromIntegral (uid (last chain))) / (fromIntegral (length chain))
