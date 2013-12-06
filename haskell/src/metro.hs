@@ -2,31 +2,20 @@ import Utils
 import RandomUtils
 import qualified Montecarlo as MC
 import Structures
-import System.IO
 import Text.Printf
 
-askInput :: (Read b,Show b) => String -> b -> IO b
-askInput question def = do 
-  putStr (question ++ ": ")
-  hFlush stdout   --fix buffer not flushing until end of line
-  ans <- getLine
-  let (err,val) = case reads ans of
-      [(x,"")]  -> (False,x)    --if read works, return answer
-      _         -> (True,def)   --if read fails, return default value
-  putStrLn $ (show val) ++ (if err then " *Read Error* Using default" else "")
-  return val
-
+positive a = a > 0
 
 main = do
-  temp      <- askInput "Temperature" (1.0 :: Double)
-  n         <- askInput "Number of particles" (108 :: Int)
-  dens      <- askInput "Density" (1.0 :: Double)
-  rc        <- askInput "Potential Cutoff Radius" (2.5 :: Double) 
-  niters_eq <- askInput "Number of interations for equilibration" (100 :: Integer)
-  step_eq   <- askInput "Equilibration step" (10 :: Int)
-  niters    <- askInput "Number of iterations for run" (300 :: Integer)
-  step      <- askInput "Sampling step" (10 :: Int)
-  seed      <- askInput "Random Number Generator seed" (1 :: Int)
+  temp      <- askInput "Temperature" (1.0 :: Double) [positive]
+  n         <- askInput "Number of particles" (108 :: Int) [positive]
+  dens      <- askInput "Density" (1.0 :: Double) [positive]
+  rc        <- askInput "Potential Cutoff Radius" (2.5 :: Double) [positive]
+  niters_eq <- askInput "Number of interations for equilibration" (100 :: Integer) [positive]
+  step_eq   <- askInput "Equilibration step" (10 :: Int) [positive]
+  niters    <- askInput "Number of iterations for run" (300 :: Integer) [positive]
+  step      <- askInput "Sampling step" (10 :: Int) [positive]
+  seed      <- askInput "Random Number Generator seed" (1 :: Int) []
 
   let   
     rcsq = rc*rc
