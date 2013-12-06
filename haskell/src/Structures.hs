@@ -1,5 +1,5 @@
 module Structures(
-iniStructureLiq
+  iniStructureLiq
 ) where
 
 import Utils

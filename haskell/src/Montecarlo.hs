@@ -9,11 +9,6 @@ module Montecarlo (
 import Utils
 import RandomUtils
 import Forcefield
-import Debug.Trace
-
--- The simplest, highest level implementation of the markov chain should take a 
--- a configuration and random number generator state as input and output a new 
--- configuration and new gen state
 
 data State = State {
   pos :: [[Double]],
@@ -32,9 +27,6 @@ data Config = Config {
 iniState :: [[Double]] -> [Double] -> Double -> StdGen -> State
 iniState pos box rcsq rndg = State pos box (enerTotal pos box rcsq) rndg 0
 
-natoms :: State -> Int
-natoms State {pos=p} = length p
-
 changeState :: Config -> State -> State
 changeState config (State {pos=oldpos, energy=oldenergy, rndg=rndg0, uid=uid0, box=box}) = State pos' box energy' rndg' uid'
   where
@@ -52,12 +44,6 @@ changeState config (State {pos=oldpos, energy=oldenergy, rndg=rndg0, uid=uid0, b
     energy' = oldenergy + de
     uid' = uid0 + (if accepted then 1 else 0)
     
-accept :: (RandomGen g) => Double -> g -> (Bool,g)
-accept arg rndg
-  -- | trace (show arg) False = undefined
-  | arg >= 0 = (True,rndg)
-  | otherwise = let (trial, newrndg) = randomd01 rndg in (exp(arg) > trial, newrndg)
-
 createChain :: Int -> Double -> Double -> Double -> State -> [State]
 createChain obsStep temp rd rcsq state0
   | obsStep <= 0            = error "obsStep must be positive integer"
@@ -67,7 +53,17 @@ createChain obsStep temp rd rcsq state0
           changeState' = changeState (Config temp rd rcsq)
 
 
+---- Utility functions
+
+accept :: (RandomGen g) => Double -> g -> (Bool,g)
+accept arg rndg
+  | arg >= 0 = (True,rndg)
+  | otherwise = let (trial, newrndg) = randomd01 rndg in (exp(arg) > trial, newrndg)
+
 -- to get the acceptance, go to the final state and check the uid, since it starts at zero
 -- and is increased everytime a change occurs, then it last one equals the number of acceptances
 acc :: (Fractional a) => [State] -> a
 acc chain = (fromIntegral (uid (last chain))) / (fromIntegral (length chain))
+
+natoms :: State -> Int
+natoms State {pos=p} = length p
