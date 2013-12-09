@@ -35,15 +35,16 @@ changeState config (State {pos=oldpos, energy=oldenergy, rndg=rndg0, uid=uid0, b
     (d3, rndg2) = randomsd01 3 rndg1
     (left,posiOld:right) = splitAt i oldpos
     posiNew = zipWith (\x d -> x + (2.0*d-1.0)*(rd config)) posiOld d3
-    posrest = singleLoopExceptIdx oldpos i
-    eold = enerOnePos posiOld posrest box (rcsq config)
-    enew = enerOnePos posiNew posrest box (rcsq config)
+    enerOnePos' p  = (enerOnePos p left box (rcsq config)) + (enerOnePos p right box (rcsq config))
+    eold = enerOnePos' posiOld
+    enew = enerOnePos' posiNew
     (accepted,rndg') = accept ((-(enew-eold))/(temp config)) rndg2
     pos' = if accepted then (left ++ (posiNew:right)) else oldpos
     de = if accepted then (enew - eold) else 0.0
     energy' = oldenergy + de
     uid' = uid0 + (if accepted then 1 else 0)
     
+
 createChain :: Int -> Double -> Double -> Double -> State -> [State]
 createChain obsStep temp rd rcsq state0
   | obsStep <= 0            = error "obsStep must be positive integer"

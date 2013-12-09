@@ -1,10 +1,7 @@
 module Forcefield(
   enerTotal,
   enerOnePos,
-  enerOne,
-  doubleLoopNoRepeat,
-  singleLoopExceptIdx,
-  allPairs_r2,
+  doubleLoop',
 ) where
 
 import Utils
@@ -18,19 +15,49 @@ lenjones_dr r = 4*(_r^12 - _r^6) where _r = 1.0/r
 lenjones_r2 0.0 = error "lenjones got zero distance"
 lenjones_r2 r2 = 4*(_r2^6 - _r2^3) where _r2 = 1.0/r2
 
-doubleLoopNoRepeat xs = [(a,b) | (i,a) <- zip [0..] xs, (j,b) <- zip [0..] xs, j > i]
-singleLoopExceptIdx xs i = [x | (j,x) <- zip [0..] xs, j /= i]
+-- doubleLoop funacc funpair list
+-- Loop over all pairs of elements of input list without repeatition
+--    funacc: accumulator function to apply to each successive result from all pairs
+--    funpair: function to apply to each pair of elements
+--    list: list of elements
+doubleLoop :: (Num b) => (b -> b -> b) -> (a -> a -> b) -> [a] -> b
+doubleLoop funacc funpair [] = 0
+doubleLoop funacc funpair (x1:[]) = error "list must have at least 2 elements"
+doubleLoop funacc funpair (x1:x2:[]) = funpair x1 x2
+doubleLoop funacc funpair (x:xs) = funacc (singleLoop funacc (funpair x) xs) (doubleLoop funacc funpair xs)
 
-allPairs_r2 pos box = map (\(a,b) -> minimg_r2 a b box) (doubleLoopNoRepeat pos)
+-- this version does not accumulate the result and instead returns a list
+doubleLoop' :: (a -> a -> b) -> [a] -> [b]
+doubleLoop' funpair [] = []
+doubleLoop' funpair (x1:[]) = error "list must have at least 2 elements"
+doubleLoop' funpair (x1:x2:[]) = [funpair x1 x2]
+doubleLoop' funpair (x:xs) = (singleLoop' (funpair x) xs) ++ (doubleLoop' funpair xs)
 
-enerPair p0 p1 box rcsq  = if (r2 < rcsq) then lenjones_r2 r2 else 0.0
-          where r2 = minimg_r2 p0 p1 box
+-- singleLoop funacc funone list
+-- Loop over all elements in input list
+--    funacc: accumulator function to apply to each successive result from all elements
+--    funone: function to apply to each element
+--    list: list of elements
+singleLoop :: (Num b) => (b -> b -> b) -> (a -> b) -> [a] -> b
+singleLoop funacc funone [] = 0
+singleLoop funacc funone (x:[]) = funone x
+singleLoop funacc funone (x:xs) = funacc (funone x) (singleLoop funacc funone xs)
 
-enerTotal pos box rcsq = sum $ map enerPair' (doubleLoopNoRepeat pos)
-          where enerPair' (p0,p1) = enerPair p0 p1 box rcsq
+-- this version does not accumulate the result and instead returns a list
+singleLoop' :: (a -> b) -> [a] -> [b]
+singleLoop'  funone [] = []
+singleLoop'  funone (x:[]) = [funone x]
+singleLoop'  funone (x:xs) = (funone x):(singleLoop'  funone xs)
 
-enerOne i pos box rcsq = sum $ map enerPair' (singleLoopExceptIdx pos i)
-          where enerPair' p0 = enerPair p0 (pos !! i ) box rcsq
+enerPair :: [Double] -> [Double] -> [Double] -> Double -> Double
+enerPair p0 p1 box rcsq 
+  | r2 < rcsq = lenjones_r2 r2
+  | otherwise = 0.0
+    where r2 = minimg_r2 p0 p1 box
 
-enerOnePos pos1 posrest box rcsq = sum $ map enerPair' posrest
-          where enerPair' p0 = enerPair p0 pos1 box rcsq
+enerTotal pos box rcsq = doubleLoop (+) (\p0 p1 -> enerPair p0 p1 box rcsq) pos
+--enerTotal pos box rcsq = sum $ doubleLoop' (\p0 p1 -> enerPair p0 p1 box rcsq) pos
+  
+enerOnePos p0 posrest box rcsq = singleLoop (+) (\p1 -> enerPair p0 p1 box rcsq) posrest
+--enerOnePos p0 posrest box rcsq = sum $ singleLoop' (\p1 -> enerPair p0 p1 box rcsq) posrest
+  
